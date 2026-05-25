@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>document share</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Lora:ital,wght@0,400;1,400&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:#8b0000;font-family:'Lora',serif;color:#fff8f0;min-height:100vh;overflow-x:hidden;}
+
+    /* floating hearts */
+    #hearts-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+    .bg-heart{position:absolute;bottom:-60px;animation:floatUp linear infinite;opacity:0;}
+    @keyframes floatUp{0%{transform:translateY(0);opacity:0;}10%{opacity:.28;}90%{opacity:.12;}100%{transform:translateY(-110vh);opacity:0;}}
+
+    /* confetti */
+    #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+
+    /* pages */
+    .page{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:60px 20px 100px;text-align:center;}
+    #page-letter{display:none;}
+
+    /* hero text */
+    .hero-title{font-family:'Dancing Script',cursive;font-size:clamp(2rem,6vw,3.5rem);color:#f0c870;text-shadow:0 0 30px rgba(240,200,112,.5);margin-bottom:6px;animation:fadeDown 1s ease both;}
+    .hero-sub{font-style:italic;font-size:1.05rem;color:#e8a0a0;margin-bottom:50px;animation:fadeDown 1.3s ease both;}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+
+    /* polaroid */
+    .polaroid-wrap{display:inline-block;position:relative;animation:popIn 1.4s ease both;}
+    @keyframes popIn{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+    .polaroid{display:inline-block;background:#fff;padding:15px 15px 55px;box-shadow:0 12px 45px rgba(0,0,0,.65);transform:rotate(-1.5deg);position:relative;}
+    .polaroid img,.photo-ph{display:block;width:300px;height:300px;object-fit:cover;}
+    .photo-ph{background:linear-gradient(135deg,#ffccd5,#ffecd2,#d4a0c0);display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(139,0,0,.5);font-family:'Dancing Script',cursive;font-size:1rem;gap:8px;}
+    .photo-ph span{font-size:2.5rem;}
+    .polaroid-label{font-family:'Dancing Script',cursive;font-size:1.2rem;color:#8b0000;margin-top:6px;text-align:center;}
+
+    /* bow */
+    .bow{position:absolute;top:-20px;right:-20px;width:78px;height:68px;z-index:10;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2));}
+    /* teddy */
+    .teddy{position:absolute;bottom:2px;left:-30px;width:70px;height:80px;z-index:10;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));}
+
+    /* gift button */
+    .gift-section{margin:50px 0 30px;}
+    .gift-intro{font-style:italic;color:#e8a0a0;margin-bottom:24px;font-size:1.05rem;}
+    #gift-btn{font-family:'Dancing Script',cursive;font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,#d4a04a,#f0c870,#d4a04a);color:#400000;border:none;border-radius:50px;padding:16px 40px;cursor:pointer;box-shadow:0 6px 25px rgba(0,0,0,.4);transition:transform .18s,box-shadow .18s;}
+    #gift-btn:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 32px rgba(0,0,0,.5);}
+    #gift-btn:active{transform:scale(.96);}
+
+    /* ── LETTER PAGE ── */
+    #page-letter{background:#8b0000;}
+
+    .letter-page-title{font-family:'Dancing Script',cursive;font-size:clamp(1.8rem,5vw,3rem);color:#f0c870;text-shadow:0 0 25px rgba(240,200,112,.45);margin-bottom:40px;animation:fadeDown .9s ease both;}
+
+    .notebook{background:#fdf3e3;border-radius:4px 12px 12px 4px;box-shadow:-6px 0 0 #c8a96e,-11px 0 0 #b89050,0 18px 55px rgba(0,0,0,.5);position:relative;overflow:hidden;text-align:left;}
+    .notebook::before{content:'';position:absolute;left:0;top:0;bottom:0;width:40px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 34px,rgba(0,0,0,.07) 34px,rgba(0,0,0,.07) 36px,transparent 36px,transparent 70px);z-index:1;}
+    .notebook::after{content:'';position:absolute;left:48px;top:0;bottom:0;width:1px;background:rgba(200,80,80,.28);z-index:1;}
+    .nb-inner{padding:44px 48px 50px 68px;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,rgba(150,130,90,.16) 35px,rgba(150,130,90,.16) 36px);background-size:100% 36px;background-position-y:44px;}
+    .letter-heading{font-family:'Dancing Script',cursive;font-size:1.9rem;color:#8b0000;text-align:center;margin-bottom:28px;}
+    #letter-text{font-family:'Lora',serif;font-size:1rem;line-height:2;color:#2a1a0e;white-space:pre-wrap;}
+    .cursor{display:inline-block;width:2px;height:1.1em;background:#8b0000;vertical-align:text-bottom;margin-left:1px;animation:blink .7s step-end infinite;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    #letter-sig{margin-top:28px;text-align:right;font-family:'Dancing Script',cursive;font-size:1.35rem;color:#8b0000;display:none;}
+
+    /* back button */
+    .back-btn{display:inline-block;margin-top:40px;font-family:'Dancing Script',cursive;font-size:1.2rem;color:#f0c870;background:transparent;border:2px solid #f0c870;border-radius:30px;padding:10px 28px;cursor:pointer;transition:all .2s;}
+    .back-btn:hover{background:rgba(240,200,112,.15);}
+
+    footer{margin-top:70px;font-family:'Dancing Script',cursive;font-size:1rem;color:#e8a0a0;opacity:.7;}
+
+    @media(max-width:480px){
+      .polaroid img,.photo-ph{width:255px;height:255px;}
+      .nb-inner{padding:36px 20px 40px 52px;}
+    }
+  </style>
+</head>
+<body>
+
+<div id="hearts-bg"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ═══════════════ PAGE 1 — HERO ═══════════════ -->
+<div class="page" id="page-home">
+
+  <h1 class="hero-title">Happy Birthday, My Love ! 🎂❤️</h1>
+
+  <br>
+  <br>
+  <br>
+
+  <div class="polaroid-wrap">
+    <div class="polaroid">
+
+
+<img src="us.jpeg" alt="my peace" style="width: 100%; height: 425px; object-fit: cover; border-radius: 4px;">
+<p style="font-family: 'Dancing Script', 'Caveat', cursive; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 26px; color: #0a0a0a; font-weight: bold; margin: 0; line-height: 1;">My peace💕</p>    </div>
+</div>
+
+  <div class="gift-section">
+    <p class="gift-intro">I have something special waiting for you…</p>
+    <button id="gift-btn">Click to open your gift 🎁</button>
+  </div>
+
+  <footer>Made with every heartbeat, just for you ❤️ Happy Birthday, 7iati</footer>
+</div>
+
+<!-- ═══════════════ PAGE 2 — LETTER ═══════════════ -->
+<div class="page" id="page-letter">
+
+  <h2 class="letter-page-title">A Letter From My Heart 💌</h2>
+
+  <div class="notebook">
+    <div class="nb-inner">
+      <h3 class="letter-heading">My Dearest Anas,</h3>
+      <div id="letter-text"></div>
+      <div id="letter-sig">— Always yours. Hiba 🌹</div>
+    </div>
+  </div>
+
+  <button class="back-btn" onclick="goBack()">← Go back</button>
+
+  <footer style="margin-top:50px;">Made with every heartbeat ❤️</footer>
+</div>
+
+<script>
+// ── floating hearts ──────────────────────────
+(function(){
+  const bg=document.getElementById('hearts-bg');
+  const sy=['❤️','🌹','💕','💖','💗','🌸','✨'];
+  function add(){
+    const s=document.createElement('span');
+    s.className='bg-heart';
+    s.textContent=sy[Math.random()*sy.length|0];
+    s.style.cssText=`left:${Math.random()*100}vw;font-size:${Math.random()*1.2+.7}rem;`;
+    const d=Math.random()*12+10;
+    s.style.animationDuration=d+'s';
+    s.style.animationDelay=Math.random()*6+'s';
+    bg.appendChild(s);
+    setTimeout(()=>s.remove(),(d+7)*1000);
+  }
+  for(let i=0;i<20;i++) add();
+  setInterval(add,1100);
+})();
+
+// ── confetti ─────────────────────────────────
+const cvs=document.getElementById('confetti-canvas');
+const cx=cvs.getContext('2d');
+function resize(){cvs.width=innerWidth;cvs.height=innerHeight;}
+addEventListener('resize',resize);resize();
+
+function boom(){
+  const cols=['#d4a04a','#f0c870','#ff8fab','#ffccd5','#a8d8ea','#fff','#ff6b8a','#7ec8e3','#ffd700'];
+  const ps=Array.from({length:280},()=>({
+    x:Math.random()*cvs.width, y:-20-Math.random()*180,
+    w:Math.random()*10+4, h:Math.random()*6+3,
+    c:cols[Math.random()*cols.length|0],
+    vx:(Math.random()-.5)*7, vy:Math.random()*4+2,
+    a:Math.random()*360, sp:(Math.random()-.5)*9,
+    circ:Math.random()>.5
+  }));
+  function draw(){
+    cx.clearRect(0,0,cvs.width,cvs.height);
+    let alive=false;
+    ps.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.07;p.a+=p.sp;
+      if(p.y<cvs.height+20)alive=true;
+      if(p.y>cvs.height+20)return;
+      cx.save();cx.globalAlpha=.92;cx.translate(p.x,p.y);cx.rotate(p.a*Math.PI/180);
+      cx.fillStyle=p.c;
+      if(p.circ){cx.beginPath();cx.arc(0,0,p.w/2,0,Math.PI*2);cx.fill();}
+      else cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      cx.restore();
+    });
+    if(alive)requestAnimationFrame(draw);
+    else cx.clearRect(0,0,cvs.width,cvs.height);
+  }
+  requestAnimationFrame(draw);
+}
+
+// ── typing ────────────────────────────────────
+const LETTER=`Today the world feels gentler because you arrived in it. Today isn't just your day, it's the day my favorite soul was born.
+You are not just someone I love, you're the quiet reason I smile, the name my heart remembers first, the peace in my chaos, and the light that guides me through even the dimmest days.
+In your presence, I forget how to guard myself, like I was always meant to feel safe there. Today I want to thank you for everything, for every laugh we shared, every small moment that turned into a beautiful memory, every time you stayed by my side when things got hard, and the way you always understand me even when I don't say much. For your kindness, for caring in your own way, and for all the little things you do that mean so much to me. You are my love, my heart, my peace, my home and my Anas .
+So, happy birthday 9lbi. May this year bring you more success, more happiness, and everything you've been working for. I hope you keep growing, achieving your goals, and always finding reasons to smile.
+
+I love you, Omri.`;
+
+function startTyping(){
+  const el=document.getElementById('letter-text');
+  const sig=document.getElementById('letter-sig');
+  const cur=document.createElement('span');
+  cur.className='cursor';
+  el.innerHTML='';
+  el.appendChild(cur);
+  let i=0;
+  const iv=setInterval(()=>{
+    if(i>=LETTER.length){
+      clearInterval(iv);cur.remove();
+      sig.style.display='block';
+      return;
+    }
+    el.insertBefore(document.createTextNode(LETTER[i++]),cur);
+    cur.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },28);
+}
+
+// ── navigation ────────────────────────────────
+function goHome(){
+  document.getElementById('page-letter').style.display='none';
+  document.getElementById('page-home').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goBack(){ goHome(); }
+
+document.getElementById('gift-btn').addEventListener('click', function() {
+    // 1. Tb9a dima kat-biyyed Opening... f l-clika
+    this.textContent = '🎁 Opening...';
+    
+    boom();
+
+    setTimeout(() => {
+        // 2. Switch pages (T-khbba l-home u t-bān l-risala)
+        document.getElementById('page-home').style.display = 'none';
+        document.getElementById('page-letter').style.display = 'block';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+
+        // 3. Fire confetti again
+        setTimeout(boom, 200);
+        setTimeout(startTyping, 600);
+
+    }, 500);
+});
+
+// Had l-code l-jdid khṣīṣan l l-raj3a dyal "Go Back"
+window.addEventListener('pageshow', function (event) {
+    const giftBtn = document.getElementById('gift-btn');
+    if (giftBtn) {
+        // Raddina l-bouton ready t-clika (mashi disabled) u raddina l-ktaba l-asliya
+        giftBtn.textContent = 'Click to open your gift 🎁'; 
+    }
+});
+</script>
+</body>
+</html>
