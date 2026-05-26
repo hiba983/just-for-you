@@ -94,7 +94,7 @@
     <div class="polaroid">
 
 
-<img src="us.jpeg" alt="my peace" style="width: 100%; height: 425px; object-fit: cover; border-radius: 4px;">
+<img id="polaroid-img" data-src="us.jpeg" src="" alt="my peace" style="width: 100%; height: 425px; object-fit: cover; border-radius: 4px;">
 <p style="font-family: 'Dancing Script', 'Caveat', cursive; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 100%; font-size: 26px; color: #0a0a0a; font-weight: bold; margin: 0; line-height: 1;">I love you💕</p>    </div>
 </div>
 
@@ -241,6 +241,11 @@ window.addEventListener('pageshow', function (event) {
         giftBtn.textContent = 'Click to open your gift 🎁'; 
     }
 });
+  // Had l-koud kayra9b ghir l-page t-t7al nishan kaybiyn t-tswira
+const secretImg = document.getElementById('polaroid-img');
+if (secretImg) {
+    secretImg.src = secretImg.getAttribute('data-src');
+}
 </script>
 </body>
 </html>
